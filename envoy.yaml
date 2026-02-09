@@ -13,12 +13,22 @@ static_resources:
           address: 0.0.0.0
           port_value: 10000
       filter_chains:
+        # This is the HTTP Connection Manager (HCM).
+        # It terminates HTTP connections and hands traffic to HTTP filters.
+        # This is the standard entry point for HTTP traffic.
+
+        #typed_config Defines which version of the HCM to use and the configuration.
+        # Envoy uses typed_config for strongly typed protobuf configuration.
         - filters:
             - name: envoy.filters.network.http_connection_manager
               typed_config:
                 "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
                 stat_prefix: ingress_http
 
+                # virtual_hosts: match requests by domain (domains: ["*"] = all domains)
+                # routes: match paths (prefix: "/")
+                # cluster: send traffic to the named backend (example_service)
+                # So here, all traffic going to any path or domain will go to example_service.
                 route_config:
                   name: local_route
                   virtual_hosts:
